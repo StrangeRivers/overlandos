@@ -1,0 +1,127 @@
+<html>
+	<head>
+		<title>My first three.js app</title>
+		<style>
+			body { margin: 0; }
+			canvas { width: 100%; height: 100% }
+		</style>
+	</head>
+	<body>
+	
+		<script src="js/three.min.js"></script>
+		<script src="js/TDSLoader.js"></script>
+		<script src="js/TrackballControls.js"></script>
+
+		<script>
+		
+			var pitch, roll, heading;
+		
+			var ws = new WebSocket("ws://127.0.0.1:5678/")
+			ws.onmessage = function (event) {
+				var JSONObject = JSON.parse(event.data);
+				pitch = JSONObject.pitch;
+				roll = JSONObject.roll;
+				heading = JSONObject.heading;
+			}
+		
+			// set up scene and camera
+			var scene = new THREE.Scene();
+			var camera = new THREE.PerspectiveCamera( 90, window.innerWidth/window.innerHeight, 0.1, 1000 );
+			camera.position.z = 5;
+			controls = new THREE.TrackballControls( camera );
+		
+			// add lights
+			scene.add( new THREE.AmbientLight( 0xffffff, 0.3 ) );
+			var light = new THREE.DirectionalLight( 0xffffff, 0.35 );
+			light.position.set( 1, 1, 1 ).normalize();
+			scene.add( light );
+
+			var renderer = new THREE.WebGLRenderer();
+			renderer.setSize( window.innerWidth, window.innerHeight );
+			document.body.appendChild( renderer.domElement );
+			
+			var axisHelper = new THREE.AxisHelper( 1 );
+			scene.add( axisHelper );
+			
+			var geometry = new THREE.BoxGeometry( 1, 1, 2 );
+			var material = new THREE.MeshLambertMaterial( { color: Math.random() * 0xffffff } );
+			var roll_vehicle = new THREE.Mesh( geometry, material );
+			roll_vehicle.position.y = 1;
+			scene.add( roll_vehicle );
+			
+			geometry = new THREE.BoxGeometry( 2, 1, 1 );
+			material = new THREE.MeshLambertMaterial( { color: Math.random() * 0xffffff } );
+			var pitch_vehicle = new THREE.Mesh( geometry, material );
+			pitch_vehicle.translateY(-2);
+			//pitch_vehicle.rotateY(Math.PI/2);
+			scene.add( pitch_vehicle );
+			
+//  			var image = new Image()
+//  			image.src = "http://localhost:8000/Compass.png"
+//   			var texture = new THREE.TextureLoader().load(image.src);
+// 
+// 			geometry = new THREE.PlaneGeometry( 5, 5 );
+//  			material = new THREE.MeshBasicMaterial( { map: texture, transparent: true, opacity: 0.9, color: 0xFFFFFF } );
+// 			compass = new THREE.Mesh( geometry, material );
+// 			scene.add( compass)
+			
+			for ( var i=0; i<180; i += 2) {
+				geometry = new THREE.Geometry();
+				var vertex = new THREE.Vector3( 1.5, 0, 0 );
+				var vertex2 = new THREE.Vector3( 1.8, 0, 0 );
+				geometry.vertices.push(vertex, vertex2);
+				var line = new THREE.Line( geometry, new THREE.LineBasicMaterial( { color: 0xffffff, opacity: 1.0 } ) );
+				line.position.y = 1
+				line.rotation.z = i * Math.PI/180;
+				scene.add(line);
+			}
+			
+			for ( var i=0; i<180; i += 2) {
+				geometry = new THREE.Geometry();
+				vertex = new THREE.Vector3( 1.5, 0, 0 );
+				vertex2 = new THREE.Vector3( 1.8, 0, 0 );
+				geometry.vertices.push(vertex, vertex2);
+				line = new THREE.Line( geometry, new THREE.LineBasicMaterial( { color: 0xffffff, opacity: 1.0 } ) );
+				line.position.y = -2
+				line.rotation.z = i * Math.PI/180;
+				scene.add(line);
+			}
+			
+			geometry = new THREE.Geometry();
+			vertex = new THREE.Vector3( 0, 0, 0 );
+			vertex2 = new THREE.Vector3( 2, 0, 0 );
+			geometry.vertices.push(vertex, vertex2);
+			var roll_indicator = new THREE.Line( geometry, new THREE.LineBasicMaterial( { color: 0xFF0000, linewidth: 1.5, opacity: 0.8 } ) );
+			roll_indicator.position.y = 1.5
+			scene.add(roll_indicator);	
+			
+			geometry = new THREE.Geometry();
+			vertex = new THREE.Vector3( 0, 0, 0 );
+			vertex2 = new THREE.Vector3( 2, 0, 0 );
+			geometry.vertices.push(vertex, vertex2);
+			var pitch_indicator = new THREE.Line( geometry, new THREE.LineBasicMaterial( { color: 0xFF0000, linewidth: 1.5, opacity: 0.8 } ) );
+			pitch_indicator.position.y = -1.5
+			scene.add(pitch_indicator);	
+			
+			var animate = function () {
+				controls.update();
+				requestAnimationFrame( animate );
+ 				
+ 				roll_vehicle.rotation.x = -roll * Math.PI/180
+ 				roll_vehicle.rotation.z = -pitch * Math.PI/180
+ 				
+ 				pitch_vehicle.rotation.x = -pitch * Math.PI/180
+ 				pitch_vehicle.rotation.z = -roll * Math.PI/180
+
+				roll_indicator.rotation.z = (-pitch + 90) * Math.PI/180;
+				pitch_indicator.rotation.z = (-roll + 90) * Math.PI/180;
+
+
+				renderer.clear();
+				renderer.render(scene, camera);
+			};
+
+			animate();
+		</script>
+	</body>
+</html>
