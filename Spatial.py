@@ -1,5 +1,5 @@
 import sys
-import time 
+import time
 from Phidget22.Devices.Spatial import *
 from Phidget22.PhidgetException import *
 from Phidget22.Phidget import *
@@ -30,8 +30,8 @@ def SpatialAttached(e):
         print("Phidget Exception %i: %s" % (e.code, e.details))
         print("Press Enter to Exit...\n")
         readin = sys.stdin.read(1)
-        exit(1)   
-    
+        exit(1)
+
 def SpatialDetached(e):
     detached = e
     try:
@@ -40,7 +40,7 @@ def SpatialDetached(e):
         print("Phidget Exception %i: %s" % (e.code, e.details))
         print("Press Enter to Exit...\n")
         readin = sys.stdin.read(1)
-        exit(1)   
+        exit(1)
 
 def ErrorEvent(e, eCode, description):
     print("Error %i : %s" % (eCode, description))
@@ -57,4 +57,4 @@ def SpatialDataHandler(e, acceleration, angularRate, fieldStrength, timestamp):
     pitch = fuse.pitch
     roll = fuse.roll
     heading = fuse.heading
-    print( pitch, roll, heading)
+    print(pitch, roll, heading)

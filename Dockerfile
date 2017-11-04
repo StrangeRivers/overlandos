@@ -8,8 +8,8 @@ RUN wget https://www.phidgets.com/downloads/phidget22/libraries/linux/libphidget
   && tar zxvf libphidget22-1.0.0.20170818.tar.gz \
   && ./libphidget22-1.0.0.20170818/configure --prefix=/usr\
   && make -j8 \
-  && make install \
-  && cp plat/linux/udev/99-libphidget22.rules /etc/udev/rules.d
+  && make install 
+#  && cp ./plat/linux/udev/99-libphidget22.rules /etc/udev/rules.d
 
 RUN mkdir /app/Phidget22Python
 COPY Phidget22Python app/Phidget22Python

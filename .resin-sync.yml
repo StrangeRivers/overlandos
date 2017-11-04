@@ -1,0 +1,5 @@
+local_resinos:
+  app-name: overlandos-server
+  build-triggers:
+    - Dockerfile: 4c88fea05f473c69e6255879012f80f3b1b5853a6d90d46942840739c156b236
+  environment: []
